@@ -93,7 +93,11 @@ CheckJoinedWorld()
       return InStr(McTitle, "-")
 }
 
-
+Tallen() {
+    newHeight := (A_ScreenHeight / 2.5)
+    yPos := (A_ScreenHeight / 110) - (newHeight / 110)
+    WinMove, Minecraft*,, 0,%yPos%, %newHeight%, %A_ScreenWidth%
+}
 
 Reset()
 {
