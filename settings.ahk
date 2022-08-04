@@ -1,6 +1,8 @@
 ﻿#NoEnv
 SetWorkingDir %A_ScriptDir%
 
+; v0.1
+
 ; macro settings
 global MessageBox := False ; option to toggle MessageBoxes while opening the macro
 global savesDirectory := "E:\mmc-win32\MultiMC\instances\1.16.1\.minecraft\saves" ; saves folder **CASE SENSITIVE**

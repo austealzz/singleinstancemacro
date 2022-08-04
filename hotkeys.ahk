@@ -2,6 +2,8 @@
 SendMode Input
 SetWorkingDir, %A_ScriptDir%
 
+;v0.1
+
 ; macro hotkeys
 #If WinActive("Minecraft*") && WinActive("ahk_exe javaw.exe")
 {

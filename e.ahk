@@ -6,7 +6,7 @@ SetWorkingDir %A_ScriptDir%
 
 
 ; Credits: austealzz, ronkzinho, Ravalle/Joe for leting me use most of the code :D
-; Version 420
+; Version 0.1
 
 #Include %A_ScriptDir%\settings.ahk
 

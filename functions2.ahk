@@ -4,6 +4,7 @@ SetWorkingDir %A_ScriptDir%
 
 #Include %A_ScriptDir%\settings.ahk
 
+; v0.1
 
 Log(message){
             FileAppend, [%A_YYYY%-%A_MM%-%A_DD% %A_Hour%:%A_Min%:%A_Sec%] %message% `n, log.log
@@ -17,7 +18,6 @@ OnpreviewCheck(){ ; surely this is useful
         onpreview := 1
     }
 }
-
 
 
 for each, program in launchPrograms {
@@ -214,7 +214,6 @@ StartupLog(){
     atumResetKey := settings["key_CreateNewWorld"]
     Log("Minecraft saves dir is: " . savesDirectory)
     Log("mod dir is: " . modir)
-    Log("Time format is: The current local time in YYYYMMDDHH24MISS format. (In the logs is the same but have seconds: [YYYYMMDDHHSS24MISS])")
     Log("AHK Version is: " . A_AhkVersion)
     Log("Script Directory is: " . A_ScriptDir)
     Log("these are the settings: ")
