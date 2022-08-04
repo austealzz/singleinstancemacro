@@ -55,17 +55,25 @@ IfExit(){
 
 
 Widen() {
+   fs := settings["key_key.fullscreen"]
     global widthMultiplier
     newHeight := Floor(A_ScreenHeight / widthMultiplier)
     yPos := (A_ScreenHeight / 2) - (newHeight / 2)
+    if (inFullscreen()) && (fullscreen && settings.fullscreen == "true"){
+    ControlSend,, {Blind}{%fs%}, Minecraft*
+    }
     WinRestore, Minecraft*
     WinMove, Minecraft*,, 0, %yPos%, %A_ScreenWidth%, %newHeight%
 }
 
 
 Tallen() {
+   fs := settings["key_key.fullscreen"]
     newHeight := (A_ScreenHeight / 2.5)
     yPos := (A_ScreenHeight / 110) - (newHeight / 110)
+    if (inFullscreen()) && (fullscreen && settings.fullscreen == "true"){
+    ControlSend,, {Blind}{%fs%}, Minecraft*
+    }
     WinMaximize, Minecraft*
     WinRestore, Minecraft*
     Sleep, 200
