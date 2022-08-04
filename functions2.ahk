@@ -87,6 +87,19 @@ CountReset(resetType) {
     file.Write(num)
 }
 
+
+WideResetting(){
+    if (WideResets){
+        ControlSend, {F11}, Minecraft* ; GetControls() cant find the fullscreen button
+        WinMaximize, Minecraft*
+        Sleep, 200
+        Widen()
+    }
+    if (CheckJoinedWorld()){
+        ControlSend,, {F3 Down}{Esc}{F3 Up}, Minecraft*
+    }
+}
+
 TranslateKey(mcKey) {
     static keyArray := Object("key.keyboard.f1", "F1"
     ,"key.keyboard.f2", "F2"

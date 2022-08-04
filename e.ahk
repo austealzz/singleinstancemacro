@@ -55,29 +55,12 @@ IfExit(){
 
 
 Widen() {
-   fs := settings["key_key.fullscreen"]
-    global widthMultiplier
-    newHeight := Floor(A_ScreenHeight / widthMultiplier)
-    yPos := (A_ScreenHeight / 2) - (newHeight / 2)
-    if (inFullscreen()) && (fullscreen && settings.fullscreen == "true"){
-    ControlSend,, {Blind}{%fs%}, Minecraft*
-    }
-    WinRestore, Minecraft*
-    WinMove, Minecraft*,, 0, %yPos%, %A_ScreenWidth%, %newHeight%
-}
-
-
-Tallen() {
-   fs := settings["key_key.fullscreen"]
-    newHeight := (A_ScreenHeight / 2.5)
-    yPos := (A_ScreenHeight / 110) - (newHeight / 110)
-    if (inFullscreen()) && (fullscreen && settings.fullscreen == "true"){
-    ControlSend,, {Blind}{%fs%}, Minecraft*
-    }
+    newHeight := Floor(A_ScreenHeight / 2.5)
+    yPos := (A_ScreenHeight/2) - (newHeight/2)
     WinMaximize, Minecraft*
     WinRestore, Minecraft*
     Sleep, 200
-    WinMove, Minecraft*,, 0,%yPos%, %newHeight%, %A_ScreenWidth%
+    WinMove, Minecraft*,, 0, %yPos%, %A_ScreenWidth%, %newHeight%
 }
 
 
@@ -111,6 +94,7 @@ CheckJoinedWorld()
 }
 
 
+
 Reset()
 {
     atumResetKey := settings["key_CreateNewWorld"]
@@ -118,6 +102,8 @@ Reset()
     SetTimer, waitForGame, Off
     ControlSend,, {%atumResetKey%}, Minecraft
     Log("Reset triggered by user")
+    CountReset("ATTEMPTS_DAY")
+    CountReset("ATTEMPTS_WHOLE")
     if (ResetSounds){
         ResetSound()
     }
@@ -166,29 +152,18 @@ Setup()
          return
       }
       if (CheckPreview()){
-         Log("onpreview := 1")
+         onpreview := True
          ControlSend,, {F3 down}{Esc}{F3 up}, Minecraft
+         SetTimer, waitForGame, 20
          break
       }
       else if (A_NowUTC - lastReset >= 5 && CheckJoinedWorld()){
+         WideResetting()
          break
          return
       }
    }
    Until onpreview
-   SetTimer, waitForGame, On
-}
-
-TallenOnWorldLoad(){
-      if (inFullscreen()) && (fullscreen && settings.fullscreen == "true"){
-    	fs := settings["key_key.fullscreen"]
-    	ControlSend,, {Blind}{%fs%}, Minecraft*
-    	Sleep, 200
-    	WinMaximize, Minecraft*
-    	Tallen()
-    	Sleep, 100
-    	Log("Done making Minecraft Tall")
-    }
 }
 
 
@@ -250,10 +225,9 @@ waitForGame:
    }
    if (CheckJoinedWorld() && onpreview)
    {
-      TallenOnWorldLoad()
+      WideResetting()
       Log("World Gen Finished & onpreview := 0")
       onpreview := False
-      SetTimer, waitForGame, Off
    }
    return
 
