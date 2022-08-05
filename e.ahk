@@ -161,10 +161,16 @@ Setup()
          break
          return
       }
+      fp := settings["key_FreezePreview"]
+      fpsc := (freezePreviewAfter * 60000)
       if (CheckPreview() && !CheckJoinedWorld()){
          onpreview := True
          Critical, On
          ControlSend,, {f3 down}{esc}{f3 up}, Minecraft
+         Critical, Off
+         Sleep, fpsc
+         ControlSend,, {%fp%}, Minecraft*
+         Critical, On
          Sleep, 90
    	 if (inFullscreen()){
          Sleep, 190

@@ -21,6 +21,7 @@ global FOV := 80 ; Normal = 70, Quake pro = 110
 global entityDistance := 1 ; 50% = 0.5, 500% = 5
 global settingsDelay := 15
 global settingsDelays := 1
+global freezePreviewAfter := 2.5 ; Freezes the preview after this many seconds (for performance). Set to 0 to disable
 
 ; preferences
 global ResetSounds := False ; if you want to play the old reset sounds
