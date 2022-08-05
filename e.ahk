@@ -51,6 +51,7 @@ OnExit("IfExit")
 IfExit(){
     Log("Exited by user")
     FileMoveDir, log.log, %A_ScriptDir%\pastLogs\%A_Now%.log, R
+    FileDelete, ATTEMPTS_DAY.txt
 }
 
 
@@ -106,12 +107,9 @@ Reset()
     atumResetKey := settings["key_CreateNewWorld"]
     lastReset := A_NowUTC
     SetTimer, waitForGame, Off
+    Critical, On
     ControlSend,, {Blind}{%atumResetKey%}{%leavePreview%}, Minecraft*
-   if (inFullscreen()){
-      fs := settings["key_key.fullscreen"]
-      ControlSend,, {%fs%}, Minecraft*
-      WinMaximize, Minecraft*
-   }
+    Critical, Off
     Log("Reset triggered by user")
     if (ResetSounds){
         ResetSound()
@@ -122,7 +120,9 @@ Reset()
     }
 }
 
-
+CheckStandarSettingsSaved(){
+    return CheckLogs("Saved standardoptions.txt to world file") || return CheckLogs("Changed Settings on World Join")
+}
 CheckPreview()
 {
    return CheckLogs("Starting Preview at")
@@ -164,13 +164,21 @@ Setup()
          break
          return
       }
-      if (CheckPreview()){
+      if (CheckPreview() && !CheckJoinedWorld()){
          onpreview := True
+         Critical, On
          ControlSend,, {f3 down}{esc}{f3 up}, Minecraft
+         Sleep, 90
+   	 if (inFullscreen()){
+         Sleep, 190
+      	 ControlSend,, {F11}, Minecraft*
+      	 WinMaximize, Minecraft*
+   	 }
          Sleep, 170
          if (WideResets){
          Widen()
          }
+         Critical, Off
          SetTimer, waitForGame, 20
          break
       }
@@ -244,8 +252,10 @@ waitForGame:
    }
    if (CheckJoinedWorld() && onpreview)
    {
+      Critical, On
       Log("World Gen Finished & onpreview := 0")
       WideResetting()
+      Critical, Off
       onpreview := False
    }
    return
