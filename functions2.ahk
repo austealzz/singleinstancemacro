@@ -5,6 +5,11 @@ SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\settings.ahk
 
 ; v0.1
+global settings := []
+
+
+GetControls()
+GetSettings()
 
 Log(message){
             FileAppend, [%A_YYYY%-%A_MM%-%A_DD% %A_Hour%:%A_Min%:%A_Sec%] %message% `n, log.log
@@ -68,35 +73,30 @@ GetControls() {
         }
     }
     if (!atumKeyFound)
-        settings["key_CreateNewWorld"] := "f6"
+        settings["key_CreateNewWorld"] := "F6"
 }
 
-CountReset(resetType) {
-    filePath := Format("../resets/{1}.txt", resetType)
-    if (!FileExist(filePath))
-        FileAppend, 0, %filePath%
-    file := FileOpen(filePath, "a -rw")
-    if (!IsObject(file)) {
-        cr := Func("CountReset").Bind(resetType)
-        SetTimer, %cr%, -500
-    }
-    file.Seek(0)
-    num := file.Read()
-    num += 1
-    file.Seek(0)
-    file.Write(num)
+CountAttempts(attemptType) {
+  file := attemptType . ".txt"
+  FileRead, WorldNumber, %file%
+  if (ErrorLevel)
+    WorldNumber = 0
+  else
+    FileDelete, %file%
+  WorldNumber += 1
+  FileAppend, %WorldNumber%, %file%
 }
-
 
 WideResetting(){
     if (WideResets){
-        ControlSend, {F11}, Minecraft* ; GetControls() cant find the fullscreen button
         WinMaximize, Minecraft*
         Sleep, 200
-        Widen()
     }
     if (CheckJoinedWorld()){
         ControlSend,, {F3 Down}{Esc}{F3 Up}, Minecraft*
+        WinMaximize, Minecraft*
+        Sleep, 200
+        Tallen()
     }
 }
 
@@ -226,7 +226,6 @@ TranslateKey(mcKey) {
 StartupLog(){
     atumResetKey := settings["key_CreateNewWorld"]
     Log("Minecraft saves dir is: " . savesDirectory)
-    Log("mod dir is: " . modir)
     Log("AHK Version is: " . A_AhkVersion)
     Log("Script Directory is: " . A_ScriptDir)
     Log("these are the settings: ")

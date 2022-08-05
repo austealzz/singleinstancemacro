@@ -38,7 +38,7 @@ if (FileExist(Icon))
     Menu, Tray, Tip, SingleInstance Macro Manager
 
 If (MessageBox){
-   MsgBox, Press Control P to widen your game, Control L to make your game tall to fix your blockentities
+   MsgBox, making ur game wide or making ur game tall only works if ur unfullscreened and ur game window is maximized
    WinActivate, Minecraft* 1.16.1
 }
 
@@ -55,12 +55,18 @@ IfExit(){
 
 
 Widen() {
-    newHeight := Floor(A_ScreenHeight / 2.5)
-    yPos := (A_ScreenHeight/2) - (newHeight/2)
-    WinMaximize, Minecraft*
+    global widthMultiplier
+    newHeight := Floor(A_ScreenHeight / widthMultiplier)
+    yPos := (A_ScreenHeight / 2) - (newHeight / 2)
     WinRestore, Minecraft*
-    Sleep, 200
     WinMove, Minecraft*,, 0, %yPos%, %A_ScreenWidth%, %newHeight%
+}
+
+
+Tallen() {
+    newHeight := (A_ScreenHeight / 2.5)
+    yPos := (A_ScreenHeight / 110) - (newHeight / 110)
+    WinMove, Minecraft*,, 0,%yPos%, %newHeight%, %A_ScreenWidth%
 }
 
 
@@ -93,30 +99,33 @@ CheckJoinedWorld()
       return InStr(McTitle, "-")
 }
 
-Tallen() {
-    newHeight := (A_ScreenHeight / 2.5)
-    yPos := (A_ScreenHeight / 110) - (newHeight / 110)
-    WinMove, Minecraft*,, 0,%yPos%, %newHeight%, %A_ScreenWidth%
-}
 
 Reset()
 {
+    leavePreview := settings["key_LeavePreview"]
     atumResetKey := settings["key_CreateNewWorld"]
     lastReset := A_NowUTC
     SetTimer, waitForGame, Off
-    ControlSend,, {%atumResetKey%}, Minecraft
+    ControlSend,, {Blind}{%atumResetKey%}{%leavePreview%}, Minecraft*
+   if (inFullscreen()){
+      fs := settings["key_key.fullscreen"]
+      ControlSend,, {%fs%}, Minecraft*
+      WinMaximize, Minecraft*
+   }
     Log("Reset triggered by user")
-    CountReset("ATTEMPTS_DAY")
-    CountReset("ATTEMPTS_WHOLE")
     if (ResetSounds){
         ResetSound()
+    }
+    if (CountAttempts){
+      CountAttempts("ATTEMPTS_DAY")
+      CountAttempts("ATTEMPTS_WHOLE")
     }
 }
 
 
 CheckPreview()
 {
-   return CheckLogs("Starting Preview at ")
+   return CheckLogs("Starting Preview at")
 }
 
 Move()
@@ -157,18 +166,23 @@ Setup()
       }
       if (CheckPreview()){
          onpreview := True
-         ControlSend,, {F3 down}{Esc}{F3 up}, Minecraft
+         ControlSend,, {f3 down}{esc}{f3 up}, Minecraft
+         Sleep, 170
+         if (WideResets){
+         Widen()
+         }
          SetTimer, waitForGame, 20
          break
       }
       else if (A_NowUTC - lastReset >= 5 && CheckJoinedWorld()){
          WideResetting()
+         Sleep, 200
          break
          return
       }
    }
-   Until onpreview
 }
+
 
 
 GetSettings() {
@@ -217,6 +231,7 @@ if (readySound){
     Log("Macro Ready and probably properly working")
 }
 
+
 waitForGame:
    if (lastReset == "") {
       SetTimer, waitForGame, Off
@@ -229,8 +244,8 @@ waitForGame:
    }
    if (CheckJoinedWorld() && onpreview)
    {
-      WideResetting()
       Log("World Gen Finished & onpreview := 0")
+      WideResetting()
       onpreview := False
    }
    return

@@ -26,4 +26,4 @@ global settingsDelays := 1
 global ResetSounds := False ; if you want to play the old reset sounds
 global widthMultiplier := 3 ; how wide you want to widen minecraft
 global fullscreen := True ; if u use fullscreen in Minecraft or not
-global WideResets := True
+global wideResets := True
