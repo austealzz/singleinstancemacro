@@ -120,9 +120,6 @@ Reset()
     }
 }
 
-CheckStandarSettingsSaved(){
-    return CheckLogs("Saved standardoptions.txt to world file") || return CheckLogs("Changed Settings on World Join")
-}
 CheckPreview()
 {
    return CheckLogs("Starting Preview at")
