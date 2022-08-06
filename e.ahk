@@ -4,6 +4,7 @@ SetWorkingDir %A_ScriptDir%
 #SingleInstance Force
 #Include %A_ScriptDir%\functions2.ahk
 
+SetKeyDelay, -1
 
 ; Credits: austealzz, ronkzinho, Ravalle/Joe for leting me use most of the code :D
 ; Version 0.1
@@ -45,6 +46,7 @@ If (MessageBox){
 GetControls()
 GetSettings()
 StartupLog()
+VerifyMods()
 
 OnExit("IfExit")
 
@@ -115,7 +117,7 @@ Reset()
         ResetSound()
     }
     if (CountAttempts){
-      CountAttempts("ATTEMPTS_DAY")
+      CountAttempts("ATTEMPTS_SESSION")
       CountAttempts("ATTEMPTS_WHOLE")
     }
 }
@@ -161,16 +163,10 @@ Setup()
          break
          return
       }
-      fp := settings["key_FreezePreview"]
-      fpsc := (freezePreviewAfter * 60000)
-      if (CheckPreview() && !CheckJoinedWorld()){
-         onpreview := True
+      if (CheckPreview()){
+         onpreview := 1
          Critical, On
          ControlSend,, {f3 down}{esc}{f3 up}, Minecraft
-         Critical, Off
-         Sleep, fpsc
-         ControlSend,, {%fp%}, Minecraft*
-         Critical, On
          Sleep, 90
    	 if (inFullscreen()){
          Sleep, 190
@@ -186,8 +182,8 @@ Setup()
          break
       }
       else if (A_NowUTC - lastReset >= 5 && CheckJoinedWorld()){
+         onpreview := 0
          WideResetting()
-         Sleep, 200
          break
          return
       }

@@ -5,8 +5,11 @@ SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\settings.ahk
 
 ; v0.1
+global savesDirectory := "E:\mmc-win32\MultiMC\instances\1.16.1\.minecraft\saves" ; saves folder **CASE SENSITIVE**
 global settings := []
+global mcDir := StrReplace(savesDirectory, "saves\", "")
 
+savesDirectory := RegExReplace(savesDirectory, "saves(\/|\\)*", "saves\")
 
 GetControls()
 GetSettings()
@@ -86,6 +89,67 @@ CountAttempts(attemptType) {
   WorldNumber += 1
   FileAppend, %WorldNumber%, %file%
 }
+
+VerifyMods() { ; shoutout mach
+  moddir := mcDir . "mods\"
+  optionsFile := mcDir . "options.txt"
+  atum := false
+  wp := false
+  standardSettings := false
+  fastReset := false
+  sleepBg := false
+  sodium := false
+  srigt := false
+  Loop, Files, %moddir%*.jar
+  {
+    if (InStr(A_LoopFileName, "atum"))
+      atum := true
+    else if (InStr(A_LoopFileName, "worldpreview"))
+      wp := true
+    else if (InStr(A_LoopFileName, "standardsettings"))
+      standardSettings := true
+    else if (InStr(A_LoopFileName, "fast-reset"))
+      fastReset := true
+    else if (InStr(A_LoopFileName, "sleepbackground"))
+      sleepBg := true
+    else if (InStr(A_LoopFileName, "sodium"))
+      sodium := true
+    else if (InStr(A_LoopFileName, "SpeedRunIGT"))
+      srigt := true
+    else if (InStr(A_LoopFileName, "krypton")) {
+      Log("Directory " . moddir " has krypton, macro might slow down")
+    }
+  }
+  if !atum {
+    MsgBox, Directory %moddir% missing required mod: atum. Macro will not work. Download: https://github.com/VoidXWalker/Atum/releases
+    Log("Directory " . moddir  " missing required mod: atum. Macro will not work. Download: https://github.com/VoidXWalker/Atum/releases")
+  }
+  if !wp {
+    MsgBox, Directory %moddir% missing required mod: World Preview. Macro will likely not work. Download: https://github.com/VoidXWalker/WorldPreview/releases
+    Log("Directory " . moddir  " missing required mod: World Preview. Macro will likely not work. Download: https://github.com/VoidXWalker/WorldPreview/releases")
+  }
+  if !standardSettings {
+    MsgBox, Directory %moddir% missing highly recommended mod: standardsettings. Download: https://github.com/KingContaria/StandardSettings/releases
+    Log("Directory " . moddir  " missing highly recommended mod: standardsettings. Download: https://github.com/KingContaria/StandardSettings/releases")
+  }
+  if !fastReset {
+    Log("Directory " . moddir  " missing recommended mod fast-reset. Download: https://github.com/jan-leila/FastReset/releases")
+    MsgBox, Directory %moddir% missing recommended mod fast-reset. Download: https://github.com/jan-leila/FastReset/releases
+}
+  if !sleepBg {
+    Log("Directory " . moddir  " missing recommended mod sleepbackground. Download: https://github.com/RedLime/SleepBackground/releases")
+    MsgBox, Directory %moddir% missing recommended mod sleepbackground. Download: https://github.com/RedLime/SleepBackground/releases
+  }
+  if !sodium {
+    Log("Directory " . moddir  " missing recommended mod sodium. Download: https://github.com/jan-leila/sodium-fabric/releases")
+    MsgBox, Directory %moddir% missing recommended mod sodium. Download: https://github.com/jan-leila/sodium-fabric/releases
+  }
+  if !srigt {
+    Log("Directory " . moddir  " recommended mod SpeedRunIGT. Download: https://redlime.github.io/SpeedRunIGT/")
+    MsgBox, Directory %moddir% recommended mod SpeedRunIGT. Download: https://redlime.github.io/SpeedRunIGT/
+  }
+}
+
 
 WideResetting(){
     if (WideResets){
@@ -224,8 +288,10 @@ TranslateKey(mcKey) {
 }
 
 StartupLog(){
+    leavePreview := settings["key_LeavePreview"]
     atumResetKey := settings["key_CreateNewWorld"]
     Log("Minecraft saves dir is: " . savesDirectory)
+    Log("Minecraft dir is: " . mcDir)
     Log("AHK Version is: " . A_AhkVersion)
     Log("Script Directory is: " . A_ScriptDir)
     Log("these are the settings: ")
@@ -234,5 +300,5 @@ StartupLog(){
     Log("entityDistance is: " . entityDistance)
     Log("lowRender is: " . lowRender)
     Log("atumResetKey is: " . atumResetKey)
-    Log("performanceMethod is: " . performanceMethod)
+    Log("leavePreviewKey is: " . leavePreview)
 }
