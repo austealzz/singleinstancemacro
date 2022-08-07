@@ -15,11 +15,13 @@ SetKeyDelay, -1
 ; Please dont touch this
 global onpreview := 0
 global lastReset := 0
-global mcDir := StrReplace(savesDirectory, "saves\", "")
+global mcDir := GetMcDir(rawPid)
 global settings := []
+rawPid := pid
+WinGet, pid, PID, Minecraft*
 
 
-savesDirectory := RegExReplace(savesDirectory, "saves(\/|\\)*", "saves\")
+savesDirectory := mcDir . "saves\"
 
 SetKeyDelay, 0
 
@@ -66,10 +68,11 @@ Widen() {
 }
 
 
-Tallen() {
-    newHeight := (A_ScreenHeight / 2.5)
-    yPos := (A_ScreenHeight / 110) - (newHeight / 110)
-    WinMove, Minecraft*,, 0,%yPos%, %newHeight%, %A_ScreenWidth%
+Tallen() { ; shoutout priffin
+	thinSize := Floor( A_ScreenWidth / thinMultiplier )
+	thinPos := Floor( (A_ScreenWidth/2) - (thinSize/2) )
+        WinGetPos,,,w,,A
+        WinMove, A,,thinPos,0,thinSize, %A_ScreenHeight% 
 }
 
 

@@ -5,11 +5,12 @@ SetWorkingDir %A_ScriptDir%
 #Include %A_ScriptDir%\settings.ahk
 
 ; v0.1
-global savesDirectory := "E:\mmc-win32\MultiMC\instances\1.16.1\.minecraft\saves" ; saves folder **CASE SENSITIVE**
 global settings := []
-global mcDir := StrReplace(savesDirectory, "saves\", "")
+WinGet, pid, PID, Minecraft*
+global rawPid := pid
+mcDir := GetMcDir(rawPid)
 
-savesDirectory := RegExReplace(savesDirectory, "saves(\/|\\)*", "saves\")
+global savesDirectory := mcDir . "saves\"
 
 GetControls()
 GetSettings()
@@ -301,4 +302,39 @@ StartupLog(){
     Log("lowRender is: " . lowRender)
     Log("atumResetKey is: " . atumResetKey)
     Log("leavePreviewKey is: " . leavePreview)
+}
+
+RunHide(Command)
+{
+  dhw := A_DetectHiddenWindows
+  DetectHiddenWindows, On
+  Run, %ComSpec%,, Hide, cPid
+  WinWait, ahk_pid %cPid%
+  DetectHiddenWindows, %dhw%
+  DllCall("AttachConsole", "uint", cPid)
+
+  Shell := ComObjCreate("WScript.Shell")
+  Exec := Shell.Exec(Command)
+  Result := Exec.StdOut.ReadAll()
+
+  DllCall("FreeConsole")
+  Process, Close, %cPid%
+  Return Result
+}
+
+GetMcDir(pid)
+{
+  command := Format("powershell.exe $x = Get-WmiObject Win32_Process -Filter \""ProcessId = {1}\""; $x.CommandLine", pid)
+  rawOut := RunHide(command)
+  if (InStr(rawOut, "--gameDir")) {
+    strStart := RegExMatch(rawOut, "P)--gameDir (?:""(.+?)""|([^\s]+))", strLen, 1)
+    return SubStr(rawOut, strStart+10, strLen-10) . "\"
+  } else {
+    strStart := RegExMatch(rawOut, "P)(?:-Djava\.library\.path=(.+?) )|(?:\""-Djava\.library.path=(.+?)\"")", strLen, 1)
+    if (SubStr(rawOut, strStart+20, 1) == "=") {
+      strLen -= 1
+      strStart += 1
+    }
+    return StrReplace(SubStr(rawOut, strStart+20, strLen-28) . ".minecraft\", "/", "\")
+  }
 }
